@@ -1252,6 +1252,13 @@ static int DecodeVideo( decoder_t *p_dec, block_t *p_block )
     decoder_sys_t *p_sys = p_dec->p_sys;
     block_t **pp_block = p_block ? &p_block : NULL /* drain signal */;
 
+    if (p_sys->b_first_frame && b_gotpicture) {
+        if (AV_PICTURE_TYPE_I != frame->pict_type) {
+            av_frame_unref(frame);
+            break;
+        }
+    }
+
     if( p_block &&
         p_block->i_flags & (BLOCK_FLAG_DISCONTINUITY|BLOCK_FLAG_CORRUPTED) )
     {
